@@ -31,3 +31,8 @@ RUN wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-b
 ADD init.gradle /opt/gradle-${GRADLE_VERSION}/init.d/init.gradle
 ENV PATH ${PATH}:/opt/gradle-${GRADLE_VERSION}/bin
 # ENV JVM_ARGS "-Xmx2048m -XX:MaxPermSize=1024m"
+
+# Install Jenkins remoting
+ARG JENKINS_REMOTING_VERSION
+RUN wget -q https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${JENKINS_REMOTING_VERSION}/remoting-${JENKINS_REMOTING_VERSION}.jar -O remoting.jar
+ENTRYPOINT java -cp /opt/remoting.jar hudson.remoting.jnlp.Main -headless -workDir /opt/jenkins -url $0 $1 $2
