@@ -1,33 +1,36 @@
-FROM debian:stretch-slim
+FROM ubuntu
 
-MAINTAINER Wang Zhiyong "zhywang@live.com"
+MAINTAINER cheshir "ns@devtodev.com"
 
 WORKDIR /opt
 
 # Install essantial tools
-RUN apt-get update && dpkg --add-architecture i386 && mkdir -p /usr/share/man/man1 && apt-get install -y libc6-i386 lib32z1 git wget unzip openjdk-8-jre-headless openjdk-8-jdk-headless ca-certificates-java && apt-get clean
+RUN apt-get update \
+    && apt-get install -y default-jdk wget unzip \
+    && apt-get clean
 
 # Install Android SDK
-ARG ANDROID_SDK_VERSION
-ARG ANDROID_VERSION
-ARG ANDROID_BUILD_TOOLS_VERSION
+ARG ANDROID_SDK_VERSION=4333796
 
-RUN mkdir android-sdk-linux &&\
- 	wget -q https://dl.google.com/android/repository/sdk-tools-linux-$ANDROID_SDK_VERSION.zip &&\
- 	unzip -qq -d android-sdk-linux sdk-tools-linux-$ANDROID_SDK_VERSION.zip &&\
- 	chown -R root.root android-sdk-linux/tools &&\
- 	rm -rf sdk-tools-linux-$ANDROID_SDK_VERSION.zip
-RUN echo y | android-sdk-linux/tools/bin/sdkmanager --sdk_root=./android-sdk-linux "platform-tools"
-RUN echo y | android-sdk-linux/tools/bin/sdkmanager --sdk_root=./android-sdk-linux "build-tools;$ANDROID_BUILD_TOOLS_VERSION"
-RUN echo y | android-sdk-linux/tools/bin/sdkmanager --sdk_root=./android-sdk-linux "platforms;android-$ANDROID_VERSION"
+RUN mkdir sdk \
+    && wget -q https://dl.google.com/android/repository/sdk-tools-linux-$ANDROID_SDK_VERSION.zip \
+ 	&& unzip -qq -d sdk sdk-tools-linux-$ANDROID_SDK_VERSION.zip \
+ 	&& chown -R root.root sdk/tools \
+ 	&& rm -rf sdk-tools-linux-$ANDROID_SDK_VERSION.zip
 
-# Setup environment
-ENV ANDROID_HOME /opt/android-sdk-linux
-ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
+# Add android tools and platform tools to PATH
+ENV ANDROID_HOME /opt/sdk
+ENV ANDOIRD_BIN $ANDROID_HOME/tools/bin 
+ENV ANDROID_TOOLS $ANDROID_HOME/platform-tools
+ENV ANDROID_EMU $ANDROID_HOME/emulator
 
-# Install gradle
-ARG GRADLE_VERSION
-RUN wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip && unzip -qq gradle-${GRADLE_VERSION}-bin.zip && rm -rf gradle-${GRADLE_VERSION}-bin.zip
-ADD init.gradle gradle-${GRADLE_VERSION}/init.d/init.gradle
-ENV PATH ${PATH}:/opt/gradle-${GRADLE_VERSION}/bin
-# ENV JVM_ARGS "-Xmx2048m -XX:MaxPermSize=1024m"
+ENV PATH $PATH:$ANDOIRD_BIN
+ENV PATH $PATH:$ANDROID_TOOLS
+ENV PATH $PATH:$ANDROID_EMU
+
+# Export JAVA_HOME variable
+ENV JAVA_HOME /usr/lib/jvm/default-java
+
+RUN echo $PATH
+RUN echo $ANDROID_HOME
+RUN echo $JAVA_HOME

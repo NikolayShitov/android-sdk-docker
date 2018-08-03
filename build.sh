@@ -1,13 +1,7 @@
 #!/bin/sh
 set -e
-ANDROID_SDK_VERSION="3859397"
-ANDROID_VERSION="27"
-ANDROID_BUILD_TOOLS_VERSION="27.0.3"
-GRADLE_VERSION="4.5.1"
-NAME="zhywang/android-sdk"
-TAG="$ANDROID_SDK_VERSION-$ANDROID_VERSION-$ANDROID_BUILD_TOOLS_VERSION"
-sed -e "s/EMAIL/$email/;s/AUTH/$auth/" templ > config.json
-docker build --build-arg ANDROID_SDK_VERSION=$ANDROID_SDK_VERSION --build-arg ANDROID_VERSION=$ANDROID_VERSION --build-arg ANDROID_BUILD_TOOLS_VERSION=$ANDROID_BUILD_TOOLS_VERSION --build-arg GRADLE_VERSION=$GRADLE_VERSION -t "$NAME" .
-docker tag $NAME $NAME:$TAG
-docker --config=. push "$NAME:$TAG"
-rm -rf config.json
+# 28 VERSION
+ANDROID_SDK_VERSION="4333796"
+docker build \
+    --build-arg ANDROID_SDK_VERSION=$ANDROID_SDK_VERSION \
+    -t dtdservices/android-sdk .
