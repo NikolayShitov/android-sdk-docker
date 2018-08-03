@@ -2,6 +2,20 @@ FROM ubuntu
 
 MAINTAINER cheshir "ns@devtodev.com"
 
+# Specially for SSH access and port redirection
+ENV ROOTPASSWORD android
+
+# Expose ADB, ADB control and VNC ports
+EXPOSE 22
+EXPOSE 5037
+EXPOSE 5554
+EXPOSE 5555
+EXPOSE 5900
+EXPOSE 80
+EXPOSE 443
+
+ENV DEBIAN_FRONTEND noninteractive
+
 WORKDIR /opt
 
 # Install essantial tools
