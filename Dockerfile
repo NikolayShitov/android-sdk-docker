@@ -20,7 +20,7 @@ WORKDIR /opt
 
 # Install essantial tools
 RUN apt-get update \
-    && apt-get install -y default-jdk wget unzip \
+    && apt-get install -y default-jre default-jdk wget unzip \
     && apt-get clean
 
 # Install Android SDK
