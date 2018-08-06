@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:16.04
 
 MAINTAINER cheshir "ns@devtodev.com"
 
@@ -20,6 +20,7 @@ WORKDIR /opt
 
 # Install essantial tools
 RUN apt-get update \
+    && dpkg --add-architecture i386 \
     && apt-get install -y default-jre default-jdk wget unzip \
     && apt-get clean
 
