@@ -6,6 +6,7 @@ MAINTAINER cheshir "ns@devtodev.com"
 ENV ROOTPASSWORD android
 
 # Expose ADB, ADB control and VNC ports
+EXPOSE 22
 EXPOSE 5037
 EXPOSE 5554
 EXPOSE 5555
@@ -21,7 +22,7 @@ WORKDIR /opt
 # Install essantial tools
 RUN apt-get update \
     && dpkg --add-architecture i386 \
-    && apt-get install -y default-jre default-jdk wget unzip \
+    && apt-get install -y default-jre default-jdk wget unzip openssh-server ssh net-tools\
     && apt-get clean
 
 # Install Android SDK
@@ -49,3 +50,10 @@ ENV JAVA_HOME /usr/lib/jvm/default-java
 RUN echo $PATH
 RUN echo $ANDROID_HOME
 RUN echo $JAVA_HOME
+
+# Run sshd
+RUN mkdir /var/run/sshd && \
+    echo "root:$ROOTPASSWORD" | chpasswd && \
+    sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
+    echo "export VISIBLE=now" >> /etc/profile
