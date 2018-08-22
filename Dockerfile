@@ -2,9 +2,6 @@ FROM ubuntu:16.04
 
 MAINTAINER cheshir "ns@devtodev.com"
 
-# Specially for SSH access and port redirection
-ENV ROOTPASSWORD android
-
 # Expose ADB, ADB control and VNC ports
 EXPOSE 22
 EXPOSE 5037
@@ -21,7 +18,7 @@ WORKDIR /opt
 # Install essantial tools
 RUN apt-get -y update \
     && dpkg --add-architecture i386 \
-    && apt-get install -y default-jre default-jdk wget unzip openssh-server
+    && apt-get install -y default-jre default-jdk wget unzip
 
 # Install Android SDK
 ARG ANDROID_SDK_VERSION=4333796
@@ -49,13 +46,4 @@ RUN echo $PATH
 RUN echo $ANDROID_HOME
 RUN echo $JAVA_HOME
 
-# Run sshd
-RUN mkdir /var/run/sshd && \
-RUN echo "root:${ROOTPASSWORD}" | chpasswd
-RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-RUN sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
 
-ENV NOTVISIBLE "in users profile"
-
-RUN echo "export VISIBLE=now" >> /etc/profile
