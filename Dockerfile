@@ -21,7 +21,7 @@ WORKDIR /opt
 # Install essantial tools
 RUN apt-get update \
     && dpkg --add-architecture i386 \
-    && apt-get install -y default-jre default-jdk wget unzip openssh-server ssh net-tools\
+    && apt-get install -y default-jre default-jdk wget unzip openssh-server ssh net-tools \
     && apt-get clean
 
 # Install Android SDK
@@ -29,13 +29,13 @@ ARG ANDROID_SDK_VERSION=4333796
 
 RUN mkdir sdk \
     && wget -q https://dl.google.com/android/repository/sdk-tools-linux-$ANDROID_SDK_VERSION.zip \
- 	&& unzip -qq -d sdk sdk-tools-linux-$ANDROID_SDK_VERSION.zip \
- 	&& chown -R root.root sdk/tools \
- 	&& rm -rf sdk-tools-linux-$ANDROID_SDK_VERSION.zip
+    && unzip -qq -d sdk sdk-tools-linux-$ANDROID_SDK_VERSION.zip \
+    && chown -R root.root sdk/tools \
+    && rm -rf sdk-tools-linux-$ANDROID_SDK_VERSION.zip
 
 # Add android tools and platform tools to PATH
 ENV ANDROID_HOME /opt/sdk
-ENV ANDOIRD_BIN $ANDROID_HOME/tools/bin 
+ENV ANDOIRD_BIN $ANDROID_HOME/tools/bin
 ENV ANDROID_TOOLS $ANDROID_HOME/platform-tools
 ENV ANDROID_EMU $ANDROID_HOME/emulator
 
@@ -52,7 +52,11 @@ RUN echo $JAVA_HOME
 
 # Run sshd
 RUN mkdir /var/run/sshd && \
-    echo "root:$ROOTPASSWORD" | chpasswd && \
-    sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
-    echo "export VISIBLE=now" >> /etc/profile
+RUN echo "root:${ROOTPASSWORD}" | chpasswd
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+ENV NOTVISIBLE "in users profile"
+
+RUN echo "export VISIBLE=now" >> /etc/profile
