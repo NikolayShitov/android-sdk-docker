@@ -19,7 +19,8 @@ ENV DEBIAN_FRONTEND noninteractive
 WORKDIR /opt
 
 # Install essantial tools
-RUN dpkg --add-architecture i386 \
+RUN apt-get -y update \
+    && dpkg --add-architecture i386 \
     && apt-get install -y default-jre default-jdk wget unzip openssh-server
 
 # Install Android SDK
