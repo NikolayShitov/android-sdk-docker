@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND noninteractive
 WORKDIR /opt
 
 # Install essantial tools
-RUN apt-get -y update && wget unzip
+RUN apt-get -y update && apt-get -y install wget unzip
 
 # Install Android SDK
 ARG ANDROID_SDK_VERSION=4333796
